@@ -8,7 +8,6 @@
         if (!self::$conexion) {
             self::$conexion = mysqli_connect(Constantes::$servername, Constantes::$username, Constantes::$password, Constantes::$database);
             if (!self::$conexion) {
-                die();
             }
         }
         return self::$conexion;
@@ -25,29 +24,18 @@
             $stmt->execute();
             $resultados = $stmt->get_result();
 
-
-            if ($resultados->num_rows != 0) {
-                while ($fila = $resultados->fetch_assoc()) {
-                    echo "ID: " . $fila["id"] . ", ID Persona: " . $fila["idPersona"] . ", tabla Oculta: " . $fila["tablaOculta"] . ", tabla Jugador: " . $fila["tablaJugador"] . ", Finalizada: " . $fila["finalizada"] ."<br>";
-                }
+            if ($resultados->num_rows == 0) {
                 $resultados->free();
-            } else {
-                $resultados= 'No se ha encontrado ningún registro<br>';
-            }
-        
+            } 
+
         }elseif($idPartida == null){
         $consulta = "SELECT * FROM partidas WHERE idPersona = $idPersona";
         $stmt = self::$conexion->prepare($consulta);
         $stmt->execute();
         $resultados = $stmt->get_result();
 
-        if ($resultados->num_rows != 0) {
-            while ($fila = $resultados->fetch_assoc()) {
-                echo "ID: " . $fila["id"] . ", ID Persona: " . $fila["idPersona"] . ", tabla Oculta: " . $fila["tablaOculta"] . ", tabla Jugador: " . $fila["tablaJugador"] . ", Finalizada: " . $fila["finalizada"] ."<br>";
-            }
+        if ($resultados->num_rows == 0) {
             $resultados->free();
-        } else {
-            $resultados= 'No se ha encontrado ningún registro<br>';
         }
     }else{
         $consulta = "SELECT * FROM partidas WHERE idPersona = $idPersona and idPartida = $idPartida";
@@ -71,7 +59,10 @@
             echo "Error al preparar la consulta: " . self::$conexion->error;
             return;
         }
-            $stmt->bind_param($id, $idPersona, $contrasena, $tablaOculta, $tablaJugador, $finalizada);
+
+            $delimitador = ", "; 
+            $tablaOcultaString = explode($delimitador, $tablaOculta);
+            $stmt->bind_param($id, $idPersona, $contrasena, $tablaOcultaString, $tablaJugador, $finalizada);
     
         if ($stmt->execute()) {
             echo "Partida actualizada con éxito.";
@@ -93,7 +84,9 @@
             echo "Error al preparar la consulta: " . self::$conexion->error;
             return;
         }
-            $stmt->bind_param("ssii", $tablaJugador, $finalizada, $id, $idPersona);
+            $delimitador = ", "; 
+            $tablaJugadorString = explode($delimitador, $tablaJugador);
+            $stmt->bind_param("ssii", $tablaJugadorString, $finalizada, $id, $idPersona);
     
         if ($stmt->execute()) {
             echo "Partida actualizada con éxito.";
@@ -125,8 +118,8 @@
         if ($stmt->execute()) {
             $resultado = $stmt->get_result();
             
-            if ($resultado->num_rows > 0) {
-                $mensaje = "Persona encontrada.";            
+            if ($resultado->num_rows < 1) {
+                $resultado->free();      
             } else {
                 $mensaje = "Persona no encontrada.";
                 }
@@ -137,7 +130,7 @@
         }
         
         $stmt->close();
-        return $mensaje;
+        return $resultado;
     }
     
 }

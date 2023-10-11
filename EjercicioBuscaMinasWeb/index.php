@@ -12,19 +12,21 @@ $requestMethod = $_SERVER["REQUEST_METHOD"];
 $paths = $_SERVER['REQUEST_URI'];
 if($requestMethod=='GET'){
     $arraypath= explode('/',$paths);
-    $data = json_decode(file_get_contents('php://input'), true);
-    if (json_last_error() == JSON_ERROR_NONE) {
-
         $buscaminas=FactoriaBuscaminas::crearBuscaminas($data["Tablero"],true);
         echo json_encode(Controlador::cambiarPartida($data["Correo"],$data["Contrasena"]));
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (json_last_error() == JSON_ERROR_NONE) {
 
-    }else{
-        $cod = 406;
-        $mes = "FORMAT CONTENT NOT ACCEPTABLE";
-        header('HTTP/1.1 '.$cod.' '.$mes);
-        echo json_encode(['cod' => $cod,
-        'mes' => $mes]);
-    }
+            $inicioSesion=Controlador::buscarUsuario($data["Correo"],$data["Contrasena"]);
+
+            }else{
+                $cod = 406;
+                $mes = "FORMAT CONTENT NOT ACCEPTABLE";
+                header('HTTP/1.1 '.$cod.' '.$mes);
+                echo json_encode(['cod' => $cod,
+                'mes' => $mes]);
+            }
+    
 
     if (count($arraypath)==1){
         $consulta=$arraypath[1];
@@ -72,7 +74,14 @@ if($requestMethod=='GET'){
         echo json_encode(['cod' => $cod,
                           'mes' => $mes]);    }    
 
+}elseif($requestMethod=='PUT'){
+
+}elseif($requestMethod=='DELETE'){
+    
 }
+
+
+
 
 // }elseif(count($arraypath)==2){
 //     $consulta=$arraypath[1];
