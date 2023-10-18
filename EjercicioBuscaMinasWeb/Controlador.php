@@ -1,7 +1,10 @@
 <?php 
+require_once('Conexion.php');
+
+
 class Controlador {
 
-    static function mostrarPartidas($idPersona, $idPartida){
+    static function mostrarPartidas($idPersona=null, $idPartida=null){
         $arrayPersonas = Conexion::mostrarPartidas($idPersona, $idPartida);
         $cod = 201;
         $mes = "TODO OK";
@@ -14,8 +17,8 @@ class Controlador {
         echo json_encode($respuesta);
     }
 
-    static function buscarUsuario($id){
-        $arrayPersonas = Conexion::buscarUsuario($id);
+    static function historicoPartidas($idPersona=null){
+        $arrayPersonas = Conexion::historicoPartidas($idPersona);
         $cod = 201;
         $mes = "TODO OK";
         header(Constantes::$headerMssg . $cod . ' ' . $mes);
@@ -25,6 +28,74 @@ class Controlador {
             'Personas' => $arrayPersonas
         ];
         echo json_encode($respuesta);
+    }
+
+    static function partidasGanadas($idPersona=null){
+        $arrayPersonas = Conexion::partidasGanadas($idPersona);
+        $cod = 201;
+        $mes = "TODO OK";
+        header(Constantes::$headerMssg . $cod . ' ' . $mes);
+        $respuesta = [
+            'Cod:' => $cod,
+            'Mensaje:' => $mes,
+            'Personas' => $arrayPersonas
+        ];
+        echo json_encode($respuesta);
+    }
+
+    static function buscarUsuario($correo= null){
+        $arrayPersonas = Conexion::buscarUsuario($correo);
+        $cod = 201;
+        $mes = "TODO OK";
+        header(Constantes::$headerMssg . $cod . ' ' . $mes);
+        $respuesta = [
+            'Cod:' => $cod,
+            'Mensaje:' => $mes,
+            'Personas' => $arrayPersonas
+        ];
+        echo json_encode($respuesta);
+    }
+
+
+    static function registrarUsuario($contraseña, $nombre, $email, $administrador){
+        $persona = Conexion::registrarUsuario($contraseña, $nombre, $email, $administrador);
+            $cod = 201;
+            $mes = "TODO OK";
+            header(Constantes::$headerMssg . $cod . ' ' . $mes);
+            $respuesta = [
+                'Cod:' => $cod,
+                'Mensaje:' => $mes,
+                'Persona' => $persona
+            ];
+            echo json_encode($respuesta);
+    }
+
+
+    static function modificarUsuario($idPersona, $nuevaPersona){
+        $persona = Conexion::modificarUsuario($idPersona, $nuevaPersona);
+            $cod = 201;
+            $mes = "TODO OK";
+            header(Constantes::$headerMssg . $cod . ' ' . $mes);
+            $respuesta = [
+                'Cod:' => $cod,
+                'Mensaje:' => $mes,
+                'Persona' => $persona
+            ];
+            echo json_encode($respuesta);
+    }
+
+
+    static function borrarUsuario($idPersona){
+        $persona = Conexion::borrarUsuario($idPersona);
+            $cod = 201;
+            $mes = "TODO OK";
+            header(Constantes::$headerMssg . $cod . ' ' . $mes);
+            $respuesta = [
+                'Cod:' => $cod,
+                'Mensaje:' => $mes,
+                'Persona' => $persona
+            ];
+            echo json_encode($respuesta);
     }
 
 
@@ -41,8 +112,10 @@ class Controlador {
             echo json_encode($respuesta);
     }
 
-    static function insertarPartida($id, $idPersona, $contrasena, $tablaOculta, $tablaJugador, $finalizada){
-        if (Conexion::insertarPartida($id, $idPersona, $contrasena, $tablaOculta, $tablaJugador, $finalizada)) {
+    
+
+    static function insertarPartida($idPersona, $tablero,$tableroJugador){
+        if (Conexion::insertarPartida($idPersona, $tablero,$tableroJugador)) {
             $inserccion = true;
             $cod = 201;
             $mes = "TODO OK";

@@ -6,14 +6,16 @@ public  $nombre;
 public  $email;
 public  $partidaJugada;
 public  $partidaGanada;
+public $administador;
 
-function __construct($id,$contraseña,$nombre,$email,$partidaJugada,$partidaGanada) {
+function __construct($id,$contraseña,$nombre,$email,$administador,$partidaJugada,$partidaGanada) {
     $this->id = $id;
     $this->contraseña = $contraseña;
     $this->nombre = $nombre;
     $this->email = $email;
     $this->partidaJugada = $partidaJugada;
     $this->partidaGanada = $partidaGanada;
+    $this->administador = $administador;
 }
 function getId() {
     return $this->id;   
