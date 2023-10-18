@@ -4,6 +4,6 @@ abstract class Constantes {
     static  $servername = "localhost"; 
     static  $username = "root"; 
     static  $password = "";
-    static  $database = "Buscaminas"; 
+    static  $database = "buscaminas"; 
 
 }

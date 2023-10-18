@@ -4,29 +4,34 @@ class Buscaminas {
     public $tableroJugador = array();
     public $finalizado = 0;
 
-    function __construct($tablero,$minas,) {
-        if(is_int($minas)){
-            $this->generarTablero();
+    function __construct($tablero,$item) {
+        if(is_int($item)){
+            $minas=$item;
+            $this->generarTablero($tablero);
             $this->colocarMina($minas);
         }else{
-        $tableroJugador=$minas;
+        $tableroJugador=$item;
         $this->tablero = $tablero;
         $this->tableroJugador = $tableroJugador;
         }
     }
     
 
-    function generarTablero() {
-        $this->tablero = array_fill(0, 10, array_fill(0, 10, "vacio"));
+
+    function generarTablero($tablero) {
+        $this->tablero = array_fill(0, $tablero,"vacio");
+        $this->tableroJugador = array_fill(0, $tablero, "x");
     }
 
     function colocarMina($minas){
             $conatdorMinas=0;   
-        $tamañoTablero=count($this->tablero);
+        $tamañoTablero=count($this->tablero)-1;
         while ($conatdorMinas<$minas) {
             $posicion=rand(0,$tamañoTablero);
-            $this->tablero[$posicion] = "mina";
-            $conatdorMinas++;
+            if ($this->tablero[$posicion] == "vacio") {
+                $this->tablero[$posicion] = "mina";
+                $conatdorMinas++;
+            }
         }
     }
 
@@ -41,9 +46,9 @@ class Buscaminas {
     function generarPista($posicion){
         $this->tablero[$posicion]=0;
         if ($this->tablero[$posicion]-1=="mina" || $this->tablero[$posicion]+1=="mina"){
-            $this->tablero[$posicion]=1;
+            $this->tableroJugador[$posicion]=1;
             if ($this->tablero[$posicion]-1=="mina" && $this->tablero[$posicion]+1=="mina"){
-                $this->tablero[$posicion]=2;
+                $this->tableroJugador[$posicion]=2;
             }
         }
     }
@@ -56,5 +61,8 @@ class Buscaminas {
     function getCasillas() {
         return $this->tablero;
     }  
+    function getTableroJugador() {
+        return $this->tableroJugador;
+    }
 }
 
