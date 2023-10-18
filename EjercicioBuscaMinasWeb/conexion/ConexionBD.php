@@ -1,14 +1,23 @@
-<?php
-require_once('Constantes.php');
-require_once('Usuario.php');
- class Conexion {
+<?php namespace ConexionBD;
+
+
+require_once (__DIR__."/../utils/Constantes.php");
+require_once (__DIR__."/../model/User.php");
+
+use Constantes\Constantes;
+use Exception;
+use User\User; 
+
+
+
+class ConexionBD{
 
     static $conexion;
 
     private static function conectar()
     {
         if (!self::$conexion) {
-            self::$conexion = mysqli_connect(Constantes::$servername, Constantes::$username, Constantes::$password, Constantes::$database);
+          $conexion = mysqli_connect(Constantes::URL,Constantes::USER,Constantes::PASSWORD,Constantes::NAME);
             if (!self::$conexion) {
             }
         }
@@ -196,7 +205,7 @@ public static function modificarPartida($partida) {
             mysqli_stmt_execute($stmt); 
             $resultado = mysqli_stmt_get_result($stmt);
             while($fila = mysqli_fetch_array($resultado)){
-                $user = new Usuario($fila["id"],$fila["nombre"],$fila["email"],$fila["contraseña"],$fila["administrador"],$fila["partidaJugada"],$fila["partidaGanada"]); 
+                $user = new User($fila["id"],$fila["nombre"],$fila["email"],$fila["contraseña"],$fila["administrador"],$fila["partidaJugada"],$fila["partidaGanada"]); 
                 $usuarios[] = $user;  
             }
         }else{
@@ -207,13 +216,52 @@ public static function modificarPartida($partida) {
             mysqli_stmt_execute($stmt); 
             $resultado = mysqli_stmt_get_result($stmt);
             while($fila = mysqli_fetch_array($resultado)){
-                $user = new Usuario($fila["id"],$fila["nombre"],$fila["email"],$fila["contraseña"],$fila["administrador"],$fila["partidaJugada"],$fila["partidaGanada"]); 
+                $user = new User($fila["id"],$fila["nombre"],$fila["email"],$fila["contraseña"],$fila["administrador"],$fila["partidaJugada"],$fila["partidaGanada"]); 
               }
               $usuarios[] = $user;
         }
         self::desconectar($conexion); 
         return $usuarios;
     }
+
+    public static function validarUsuario($correo, $contrasena) {
+        $conexion = self::conectar(); 
+        if (!$conexion) {
+            $resultado= "Error de conexión a la base de datos.";
+        }
+        $usuarios = array();
+        
+            
+            $sql = "SELECT * FROM personas WHERE email = ? and contraseña =?";
+            $stmt = mysqli_prepare(self::$conexion,$sql);
+            mysqli_stmt_bind_param($stmt,"ss",$correo,$contrasena);  
+            mysqli_stmt_execute($stmt); 
+            $resultado = mysqli_stmt_get_result($stmt);
+            while($fila = mysqli_fetch_array($resultado)){
+                $user = new User($fila["id"],$fila["nombre"],$fila["email"],$fila["contraseña"],$fila["administrador"],$fila["partidaJugada"],$fila["partidaGanada"]); 
+              }
+              $usuarios[] = $user;
+        
+        self::desconectar($conexion); 
+        return $usuarios;
+    }
+
+    public static function validarAdmin($correo, $contrasena) {
+        $conexion = self::conectar(); 
+        if (!$conexion) {
+            $resultado= "Error de conexión a la base de datos.";
+        }
+        $usuarios = array();
+        
+            $sql = "SELECT * FROM personas WHERE email = ? and contraseña =? and administrador = 1";
+            $stmt = mysqli_prepare(self::$conexion,$sql);
+            mysqli_stmt_bind_param($stmt,"ss",$correo,$contrasena);  
+            mysqli_stmt_execute($stmt); 
+            $resultado = mysqli_stmt_get_result($stmt);
+        
+        self::desconectar($conexion); 
+    }
+
     public static function registrarUsuario($contraseña, $nombre, $email, $administrador) { 
         $conexion = self::conectar(); 
 
@@ -284,19 +332,8 @@ public static function modificarPartida($partida) {
     }
 
 
-    public static function pedirContrasena($idPersona) {
-        self::conectar();
-        if (!self::$conexion) {
-        } else {
-        $resultados=null;
-
-        
-    }
-    return $resultados;
-    }
+  
     
 
 }
 
-
-/*hay que retornar siempre un codigo que diga si esta todo correcto o no*/
